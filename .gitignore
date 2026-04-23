@@ -192,3 +192,5 @@ _manuscript/*
 sbi-logs/*
 
 exploration/*
+
+*quarto_ipynb*
