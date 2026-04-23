@@ -184,3 +184,8 @@ exploration/*
 *quarto_ipynb*
 
 !index.html
+
+_site/*
+
+*.pkl
+*.plk

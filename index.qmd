@@ -1,8 +1,7 @@
 ---
 title: "Simulation-based inference"
 subtitle: "in gravitational wave data analysis"
-author: Jacopo Tissino
-date: 2026-04-24
+
 format:
   revealjs: 
     slide-number: true
@@ -10,11 +9,7 @@ format:
       buttons: false
     preview-links: auto
     theme: dark
-    # logo: images/quarto.png
-    # css: styles.css
-    # footer: '[https://{{< meta prerelease-subdomain >}}quarto.org](https://{{< meta prerelease-subdomain >}}quarto.org)'
-# resources:
-#   - demo.pdf
+
 ---
 
 # The gravitational wave inference problem
@@ -114,10 +109,12 @@ $$
 
 ## Flavors of SBI 
 
+::: {.incremental}
 - __Neural posterior estimation__: a density estimator $q(\theta | d)$ models the posterior $p(\theta | d)$;
 - __Neural likelihood estimation__: a density estimator $q(d | \theta)$ models the likelihood (requires sampling);
 - __Neural ratio estimation__: a classifier $r(\theta, d)$ models the likelihood-to-evidence ratio $\mathcal{L}(d|\theta) / \mathcal{Z}(d)$ (requires sampling).
 - ...
+:::
 
 More details: @liangRecentAdvancesSimulationbased2025.
 
@@ -162,20 +159,24 @@ We can compute the expectation value by
 
 An invertible, differentiable map $T$ from a simple probability distribution $p(u)$ to an arbitrary one, $q (\theta)$.
 
-
+It is often 
 
 
 ## Normalizing flows
 
 To obtain samples from $q$:
 
+:::: {.incremental}
 - sample $u$ from $p(u)$;
 - compute $\theta = T(u)$;
 - bonus: we can compute the density function as
 
+::: {.fragment}
 $$ q(\theta) = p (T^{-1}(\theta)) |\det J_{T^{-1}}(\theta)|
-$$
+$$ 
+:::
 
+::::
 
 # Toy model: nested sampling versus neural posterior estimation
 
