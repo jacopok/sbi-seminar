@@ -144,16 +144,22 @@ Consider the KL divergence from posterior $p$ to the estimator $q$:
 $$ D_{\text{KL}}( p || q_\phi) = \int p(\theta | d) \left[ \log p(\theta | d) - \log  q_\phi (\theta | d) \right] \text{d}\theta
 $$
 
-Averaging over all realizations of the data $d$:^[I use the notation $\overset{c}{=}$ for "equal up to an additive constant".]
+We use as a loss the average over all realizations of the data $d$:
 
-$$ \mathbb{E}_{d \sim \mathcal{Z}(d)} [D_{\text{KL}}( p || q_\phi)] \overset{c}{=} \int  p(\theta | d) \mathcal{Z}(d) \left[ - \log  q_\phi (\theta | d) \right] \text{d}\theta \text{d}d
+$$ \begin{aligned}
+L(\phi) &= \mathbb{E}_{d \sim \mathcal{Z}(d)} [D_{\text{KL}}( p || q_\phi)] \\
+&= \int  p(\theta | d) \mathcal{Z}(d) \left[ - \log  q_\phi (\theta | d) \right] \text{d}\theta \text{d}d + C
+\end{aligned}
 $$
 
 ## Proof
 
 By Bayes' theorem, $p(\theta | d) \mathcal{Z}(d) = \mathcal{L}(d | \theta ) \pi(\theta)$, so this is equal to
 
-$$ \mathbb{E}_{\theta \sim \pi(\theta)}  \mathbb{E}_{d \sim \mathcal{L}(d|\theta)} \left[ - \log  q_\phi (\theta | d) \right]
+$$ \begin{aligned}
+L(\phi) &= \int \pi(\theta) \mathcal{L}(d|\theta)  \left[ - \log  q_\phi (\theta | d) \right] \text{d}d \text{d}\theta + C \\
+&= \mathbb{E}_{\theta \sim \pi(\theta)}  \mathbb{E}_{d \sim \mathcal{L}(d|\theta)} \left[ - \log  q_\phi (\theta | d) \right]   + C
+\end{aligned}
 $$
 
 
@@ -173,7 +179,7 @@ A normalizing flow is an invertible, differentiable map $T_\phi$ from a simple (
 $$ u \sim g(u) \iff T(u) = \theta \sim q(\theta)
 $$
 
-It is often constructed by composing several simple, parametric transformations:
+It is often constructed by composing several simple parametric transformations:
 
 $$ T_\phi = T_1 \circ \dots \circ T_N\,.
 $$
@@ -188,7 +194,7 @@ To obtain samples from $q$:
 - we also get the density function as
 
 ::: {.fragment}
-$$ q(\theta) = p (T_\phi^{-1}(\theta)) |\det J_{T_\phi^{-1}}(\theta)|
+$$ q(\theta) = g (T_\phi^{-1}(\theta)) |\det J_{T_\phi^{-1}}(\theta)|
 $$ 
 :::
 
@@ -620,12 +626,18 @@ Other approaches exist, such as heterodyning [@rouletLabradorDomainoptimizedMach
 
 ## On the flexibility of NPE
 
-In principle, we could train our NPE model on arbitrary noise.
-In practice, all groups have so far limited themselves to Gaussian noise.
+- All groups have so far have trained NPE on Gaussian noise.
+- If we reweight with a Gaussian likelihood, it is pointless to train on anything other than Gaussian noise.
+- There are efforts toward using SBI approaches other than NPE to handle non-Gaussian noise, e.g. @emmaRNLEResidualNeural2026.
 
-If we reweight with a Gaussian likelihood, 
-it is pointless to train on anything other than Gaussian noise.
+## What do we want to know about gravitational wave sources?
 
-There are efforts toward using SBI approaches other than NPE to handle non-Gaussian noise, e.g. @emmaRNLEResidualNeural2026.
+Let's chat!
+
+- where do binaries of black holes come from?
+- does General Relativity accurately describe them?
+- how do neutron stars behave?
+- how does the Universe look on a large scale?
+- ...
 
 ## References {.scrollable}
