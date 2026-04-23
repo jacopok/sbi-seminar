@@ -138,16 +138,7 @@ dmypy.json
 
 docs/*.pdf
 *.zip
-
-skymap-comparison/*.pdf
-skymap-comparison/*.fits
-skymap-comparison/*.png
-skymap-comparison/*.tsv
-skymap-comparison/*.sqlite
-skymap-comparison/*.txt
-skymap-comparison/*.xml
 .vscode/ltex.dictionary.en-US.txt
-skymap-comparison_files/figure-pdf/*
 .jupyter_cache/*
 
 *.pdf
@@ -170,9 +161,6 @@ data
 **/.jupyter_cache/*
 **/*.ipynb
 
-data/gw170817_run/*
-!data/gw170817_run/chains/equal_weighted_post.txt
-
 **/libs/*
 *.js
 
@@ -194,3 +182,5 @@ sbi-logs/*
 exploration/*
 
 *quarto_ipynb*
+
+!index.html
