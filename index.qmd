@@ -1,13 +1,144 @@
+---
+title: "Simulation-based inference"
+subtitle: "in gravitational wave data analysis"
+author: Jacopo Tissino
+date: 2026-04-24
+format:
+  revealjs: 
+    slide-number: true
+    chalkboard: 
+      buttons: false
+    preview-links: auto
+    theme: dark
+    # logo: images/quarto.png
+    # css: styles.css
+    # footer: '[https://{{< meta prerelease-subdomain >}}quarto.org](https://{{< meta prerelease-subdomain >}}quarto.org)'
+# resources:
+#   - demo.pdf
+---
 
-# Project
+# The gravitational wave inference problem
 
-This is some example text.
+## Black hole binaries
 
+{{< video https://www.youtube.com/watch?v=1agm33iEAuo width="100%" height="100%" >}}
 
-```{python}
-from IPython.display import Markdown
+## Gravitational wave signals
 
-x = 1
+{{< video https://www.youtube.com/embed/2XmZ8-XQ9jU width="100%" height="100%" >}}
 
-Markdown(f'This is some Markdown rendered text with a variable ${x=}$.')
-```
+## The catalog
+
+{{< video https://www.youtube.com/watch?v=3B6WKSWDJRE width="100%" height="100%" >}}
+
+## Gravitational wave interferometers
+
+{{< video https://www.youtube.com/watch?v=UA1qG7Fjc2A width="100%" height="100%" >}}
+
+## What kind of data do we have?
+
+![Strain data for the GW250114 event [@abacGW250114TestingHawkings2025].](figures/Figure_1.png)
+
+## Strain data
+
+$$ d_i = n(i \Delta t) + h(i \Delta t; \theta, M)
+$$
+
+where typically $1/\Delta t = 4096 \text{Hz}$ or $16384 \text{Hz}$. 
+
+The contributions are:
+
+- instrumental noise $n(t)$;
+- gravitational wave signal $h(t; \theta, M)$, which we obtain based on a model $M$ with parameters $\theta$.
+
+## Stationary Gaussian noise model
+
+Typical assumptions about the noise:
+
+- $\mathbb{E}[n(t)] = 0$,
+- $\mathbb{E}[n(t) n(t + \Delta t)] = \gamma (\Delta t)$,
+- $\lbrace n(t_1), \dots, n(t_N) \rbrace$ is an $N$-dimensional Gaussian random variable for any choice of times $t_1 \dots t_N$.
+
+Only approximately realized:
+
+- non-stationarity;
+- non-Gaussian tails;
+- glitches.
+
+## Gravitational wave likelihood
+
+In full generality:
+
+$$ \mathcal{L}(d | \theta, M) = p(\text{noise realization } n = d - h(\theta, M) | \theta, M)
+$$
+
+With Gaussian stationary noise:
+
+$$ \mathcal{L}(d | \theta, M) \propto \exp\left( - \frac{1}{2} \int_{f_\text{min}}^{f_\text{max}} \frac{|\tilde{d}(f) - \tilde{h}(f; \theta, M)|^2}{S_n(f)} \text{d} f \right)
+$$
+
+## Bayesian inference
+
+$$ \underbrace{\mathcal{L}(d | \theta, M) \pi (\theta | M)}_{\text{assumptions}} = \underbrace{p(\theta | d, M) \mathcal{Z}(d | M)}_{\text{result}}
+$$
+
+![Posterior distribution on the component masses of GW250114. Adapted from @abacGW250114TestingHawkings2025.](figures/S250114_m1_m2_grey.png){#fig-gw250114-component-masses width=50%}
+
+## Model parameters
+
+The signal parameters $\theta$ include:
+
+- where is the source in the sky? how is it oriented? 
+- what masses do the two objects have?
+- how fast are they rotating, and in which direction?
+- ...
+
+Depending on the model, there can be 10--17 parameters.
+
+# Simulation-based inference
+
+## Simulating from the likelihood
+
+In standard inference, we _evaluate_ the likelihood $\mathcal{L}(d | \theta, M)$.
+
+In simulation-based inference, we _simulate_ data distributed according to the likelihood: 
+
+$$ d \sim \mathcal{L} ( d | \theta, M)
+$$
+
+## Flavors of SBI 
+
+- __Neural posterior estimation__: a density estimator $q(\theta | d)$ models the posterior $p(\theta | d)$;
+- __Neural likelihood estimation__: a density estimator $q(d | \theta)$ models the likelihood (requires sampling);
+- __Neural ratio estimation__: a classifier $r(\theta, d)$ models the likelihood-to-evidence ratio $\mathcal{L}(d|\theta) / \mathcal{Z}(d)$ (requires sampling).
+- ...
+
+More details: @liangRecentAdvancesSimulationbased2025.
+
+## Neural posterior estimation in a nutshell
+
+Take a density estimator $q_\phi (\theta | d)$ with parameters $\phi$. 
+Train it with a loss function in the form [@papamakariosFastEpsilonFree2016;@daxRealtimeGravitationalwaveScience2021]
+
+$$ L(\phi) = \mathbb{E}_{\theta \sim \pi(\theta)}
+ \mathbb{E}_{d \sim p(d|\theta)}
+ [-\log q_\phi(\theta|d)]\,.
+$$
+
+If training is successful, the estimator $q_{\bar{\phi}}(\theta | d)$ at $\bar{\phi} = \text{argmin}_\phi L(\phi)$ will approximate $p(\theta | d)$.
+
+## Why?
+
+Consider the posterior expectation of the KL divergence from posterior $p$ to the estimator $q$:
+
+$$ D_{\text{KL}}( p || q_\phi) = \int p(\theta | d) \left[ \log p(\theta | d) - \log  q_\phi (\theta | d) \right] \text{d}\theta
+$$
+
+Averaging over all realizations of the data $d$:^[I use the notation $\overset{c}{=}$ for "equal up to an additive constant".]
+
+$$ \mathbb{E}_{d \sim p(d)} [D_{\text{KL}}( p || q_\phi)] \overset{c}{=} \int  p(\theta | d) p(d) \left[ - \log  q_\phi (\theta | d) \right] \text{d}\theta \text{d}d
+$$
+
+## Normalizing flows
+
+## Conti

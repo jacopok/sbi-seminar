@@ -188,3 +188,7 @@ QTDublinIrish.otf
 **/*.quarto_ipynb
 
 _manuscript/*
+
+sbi-logs/*
+
+exploration/*
