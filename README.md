@@ -1,4 +1,6 @@
-A presentation on Simulation-Based Inference.
+A presentation on Simulation-Based Inference as applied to gravitational wave inference.
+
+Slides available at https://jacopok.github.io/sbi-seminar/.
 
 Useful resources:
 

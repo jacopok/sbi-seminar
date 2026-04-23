@@ -39,7 +39,7 @@ format:
 $$ d_i = n(i \Delta t) + h(i \Delta t; \theta, M)
 $$
 
-where typically $1/\Delta t = 4096 \text{Hz}$ or $16384 \text{Hz}$. 
+where typically $1/\Delta t \approx \text{a few kHz}$. 
 
 The contributions are:
 
@@ -132,7 +132,7 @@ If training is successful, the estimator $q_{\bar{\phi}}(\theta | d)$ at $\bar{\
 
 ## Proof
 
-Consider the posterior expectation of the KL divergence from posterior $p$ to the estimator $q$:
+Consider the KL divergence from posterior $p$ to the estimator $q$:
 
 $$ D_{\text{KL}}( p || q_\phi) = \int p(\theta | d) \left[ \log p(\theta | d) - \log  q_\phi (\theta | d) \right] \text{d}\theta
 $$
@@ -144,7 +144,11 @@ $$
 
 ## Proof
 
-By Bayes' theorem, $p(\theta | d) \mathcal{Z}(d) = \mathcal{L}(d | \theta ) \pi(\theta)$.
+By Bayes' theorem, $p(\theta | d) \mathcal{Z}(d) = \mathcal{L}(d | \theta ) \pi(\theta)$, so this is equal to
+
+$$ \mathbb{E}_{\theta \sim \pi(\theta)}  \mathbb{E}_{\d \sim \mathcal{L}(d|\theta)} \left[ - \log  q_\phi (\theta | d) \right]
+$$
+
 
 . . .
 
@@ -157,10 +161,14 @@ We can compute the expectation value by
 
 ## Normalizing flows
 
-An invertible, differentiable map $T$ from a simple probability distribution $p(u)$ to an arbitrary one, $q (\theta)$.
+An invertible, differentiable map $T_\phi$ from a simple probability distribution $p(u)$ to an arbitrary one, $q (\theta)$.
 
-It is often 
+It is often constructed by composing several simple transformations:
 
+$$ T_\phi = T_1 \circ \dots \circ T_N\,.
+$$
+
+The parameters $\phi$ are computed by optimization of some loss function. 
 
 ## Normalizing flows
 
@@ -169,10 +177,10 @@ To obtain samples from $q$:
 :::: {.incremental}
 - sample $u$ from $p(u)$;
 - compute $\theta = T(u)$;
-- bonus: we can compute the density function as
+- we also get the density function as
 
 ::: {.fragment}
-$$ q(\theta) = p (T^{-1}(\theta)) |\det J_{T^{-1}}(\theta)|
+$$ q(\theta) = p (T_\phi^{-1}(\theta)) |\det J_{T_\phi^{-1}}(\theta)|
 $$ 
 :::
 
@@ -365,6 +373,8 @@ _ = estimator.eval()
 
 ```{python}
 
+torch.manual_seed(250114)
+
 with torch.no_grad():
     samples = estimator.flow(x_star).sample((2**16,))
     flow_density = estimator.forward(samples, x_star)
@@ -414,6 +424,17 @@ mark_point(fig, theta_star)
 
 ## Validating the NPE results
 
+If the likelihood is tractable, we can compute
+
+$$ w_i = \frac{\mathcal{L}(d |\theta_i) \pi(\theta_i)}{q(\theta_i | d)}\,.
+$$
+
+::: {.incremental}
+- We can get the evidence as $Z(d) \approx \langle w_i \rangle$;
+- the weighted samples $(\theta_i, w_i)$ are a better representation of the posterior.
+:::
+
+## Validating the NPE results
 
 ```{python}
 def log_prior(sample):
@@ -509,6 +530,18 @@ mark_point(fig, theta_star)
 
 :::
 
+## Outliers and effective sample size
+
+The effective sample size is 
+
+$$ n _{\text{eff}} = \frac{(\sum_i w_i)^2}{\sum_i w_i^2}\,.
+$$
+
+If $q(\theta | d) = p(\theta| d)$, this is the number of samples. The sample efficiency is 
+
+$$ \epsilon = \frac{n _{\text{eff}}}{N}\in \left[ \frac{1}{N}, 1 \right]\,.
+$$
+
 ## Weighted samples comparison
 
 ::: {.panel-tabset}
@@ -521,10 +554,12 @@ plt.scatter(
     samples[:, 0],
     samples[:, 2],
     s=.3,
-    alpha=.1,
+    alpha=.15,
 )
 plt.axvline(-1, lw=.3, c='k')
 plt.axhline(-1, lw=.3, c='k')
+plt.xlabel('$\\theta_1$')
+_ = plt.ylabel('$\\theta_3$')
 
 ```
 
@@ -540,11 +575,35 @@ plt.scatter(
 )
 plt.axvline(-1, lw=.3, c='k')
 plt.axhline(-1, lw=.3, c='k')
+plt.xlabel('$\\theta_1$')
+_ = plt.ylabel('$\\theta_3$')
+
 ```
 
 :::
 
 # Back to gravitational waves
+
+## The arrival time problem
+
+![Standardization of the arrival direction [@daxGroupEquivariantNeural2023].](figures/standardized-position.png)
+
+## Realistic loss function
+
+It includes variation of the noise spectral density and Group-Equivariant NPE [@daxGroupEquivariantNeural2023]:
+
+$$
+\begin{aligned}
+ L_{\text{GNPE}} = 
+ &\mathbb{E}_{\theta \sim \pi(\theta)} \\
+ &\mathbb{E}_{S_{n} \sim p(S_{n})} \\
+ &\mathbb{E}_{d \sim p(d|\theta)} \\
+ &\mathbb{E}_{ \delta t_{I} \sim \kappa (\delta t_{I})}
+ [-\log q(\theta|d_{-t_{I}(\theta)-\delta t_{I}}, S_{n}, t_{I}(\theta) + \delta t_{I})]\,.
+\end{aligned}
+$$
+
+Other approaches exist, such as heterodyning [@rouletLabradorDomainoptimizedMachinelearning2026].
 
 ## Sample efficiency
 
