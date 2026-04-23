@@ -27,9 +27,15 @@ jobs:
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/render@v2
         with:
-          target: gh-pages
           path: .
           to: revealjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+        name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v5
+        with:
+          target_branch: gh-pages
+          build_dir: public
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
