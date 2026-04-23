@@ -30,6 +30,11 @@ format:
 
 {{< video https://www.youtube.com/watch?v=UA1qG7Fjc2A width="100%" height="100%" >}}
 
+---
+
+{{< video https://www.youtube.com/embed/FR8fEBzdmEE?&mute=1 width="100%" height="100%" >}}
+
+
 ## What kind of data do we have?
 
 ![Strain data for the GW250114 event [@abacGW250114TestingHawkings2025].](figures/Figure_1.png)
@@ -116,7 +121,9 @@ $$
 - ...
 :::
 
+::: {.fragment}
 More details: @liangRecentAdvancesSimulationbased2025.
+:::
 
 ## Neural posterior estimation in a nutshell
 
@@ -146,7 +153,7 @@ $$
 
 By Bayes' theorem, $p(\theta | d) \mathcal{Z}(d) = \mathcal{L}(d | \theta ) \pi(\theta)$, so this is equal to
 
-$$ \mathbb{E}_{\theta \sim \pi(\theta)}  \mathbb{E}_{\d \sim \mathcal{L}(d|\theta)} \left[ - \log  q_\phi (\theta | d) \right]
+$$ \mathbb{E}_{\theta \sim \pi(\theta)}  \mathbb{E}_{d \sim \mathcal{L}(d|\theta)} \left[ - \log  q_\phi (\theta | d) \right]
 $$
 
 
@@ -161,21 +168,22 @@ We can compute the expectation value by
 
 ## Normalizing flows
 
-An invertible, differentiable map $T_\phi$ from a simple probability distribution $p(u)$ to an arbitrary one, $q (\theta)$.
+A normalizing flow is an invertible, differentiable map $T_\phi$ from a simple (e.g. Gaussian) probability distribution $g(u)$ to an arbitrary one, $q (\theta)$, so that 
 
-It is often constructed by composing several simple transformations:
+$$ u \sim g(u) \iff T(u) = \theta \sim q(\theta)
+$$
+
+It is often constructed by composing several simple, parametric transformations:
 
 $$ T_\phi = T_1 \circ \dots \circ T_N\,.
 $$
-
-The parameters $\phi$ are computed by optimization of some loss function. 
 
 ## Normalizing flows
 
 To obtain samples from $q$:
 
 :::: {.incremental}
-- sample $u$ from $p(u)$;
+- sample $u$ from $g(u)$;
 - compute $\theta = T(u)$;
 - we also get the density function as
 
@@ -291,8 +299,9 @@ def prior_transform(u):
 	return u*2. - 1.
 ```
 
-
+::::: {.fragment}
 We can then sample with [`DYNESTY`](https://dynesty.readthedocs.io/en/latest/index.html).
+:::::
 
 :::
 
@@ -422,7 +431,7 @@ mark_point(fig, theta_star)
 
 ::::
 
-## Validating the NPE results
+## Validating NPE results
 
 If the likelihood is tractable, we can compute
 
@@ -430,11 +439,11 @@ $$ w_i = \frac{\mathcal{L}(d |\theta_i) \pi(\theta_i)}{q(\theta_i | d)}\,.
 $$
 
 ::: {.incremental}
-- We can get the evidence as $Z(d) \approx \langle w_i \rangle$;
-- the weighted samples $(\theta_i, w_i)$ are a better representation of the posterior.
+- We get the evidence as $Z(d) \approx \langle w_i \rangle$;
+- the weighted samples $(\theta_i, w_i)$ are a better representation of the posterior than $\theta_i$ alone.
 :::
 
-## Validating the NPE results
+## Validating NPE results
 
 ```{python}
 def log_prior(sample):
@@ -608,5 +617,15 @@ Other approaches exist, such as heterodyning [@rouletLabradorDomainoptimizedMach
 ## Sample efficiency
 
 ![Sample efficiency as a function of SNR [@santoliquidoComparingNextgenerationDetector2025].](figures/SNR_vs_sample_efficiency_cropped.png)
+
+## On the flexibility of NPE
+
+In principle, we could train our NPE model on arbitrary noise.
+In practice, all groups have so far limited themselves to Gaussian noise.
+
+If we reweight with a Gaussian likelihood, 
+it is pointless to train on anything other than Gaussian noise.
+
+There are efforts toward using SBI approaches other than NPE to handle non-Gaussian noise, e.g. @emmaRNLEResidualNeural2026.
 
 ## References {.scrollable}

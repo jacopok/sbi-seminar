@@ -7,4 +7,4 @@ Useful resources:
 - https://simulation-based-inference.org/
 - https://sbi.readthedocs.io/en/latest/index.html
 - https://sbi-applications-explorer.streamlit.app/
-
+- https://dingo-gw.readthedocs.io/en/latest/sbi.html
