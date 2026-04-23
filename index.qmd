@@ -160,6 +160,23 @@ We can compute the expectation value by
 
 ## Normalizing flows
 
+An invertible, differentiable map $T$ from a simple probability distribution $p(u)$ to an arbitrary one, $q (\theta)$.
+
+
+
+
+## Normalizing flows
+
+To obtain samples from $q$:
+
+- sample $u$ from $p(u)$;
+- compute $\theta = T(u)$;
+- bonus: we can compute the density function as
+
+$$ q(\theta) = p (T^{-1}(\theta)) |\det J_{T^{-1}}(\theta)|
+$$
+
+
 # Toy model: nested sampling versus neural posterior estimation
 
 ## Problem setup
@@ -265,12 +282,15 @@ def prior_transform(u):
 	return u*2. - 1.
 ```
 
+. . .
+
 We can then sample with [`DYNESTY`](https://dynesty.readthedocs.io/en/latest/index.html).
 
 :::
 
 ::: {.column width="45%"}
 
+. . .
 
 ```{python}
 fname_nested = Path('./nested_sampler.pkl')
@@ -374,6 +394,8 @@ samples = (estimator.flow(x_obs)
 :::
 
 ::: {.column width="45%"}
+
+. . .
 
 ```{python}
 
