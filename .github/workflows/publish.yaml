@@ -31,7 +31,7 @@ jobs:
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/render@v2
         with:
-          path: _site
+          path: .
           to: revealjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
