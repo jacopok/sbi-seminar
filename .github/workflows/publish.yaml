@@ -24,13 +24,12 @@ jobs:
         run: echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-      - name: Install tinytex
-        run: quarto install tinytex
       - name: Render and Publish
-        uses: quarto-dev/quarto-actions/publish@v2
+        uses: quarto-dev/quarto-actions/render@v2
         with:
           target: gh-pages
           path: .
+          to: revealjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
