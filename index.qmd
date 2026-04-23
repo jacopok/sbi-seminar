@@ -492,6 +492,10 @@ mark_point(fig, theta_star)
 
 ## Weighted samples comparison
 
+::: {.panel-tabset}
+
+### NPE
+
 ```{python}
 
 plt.scatter(
@@ -505,19 +509,21 @@ plt.axhline(-1, lw=.3, c='k')
 
 ```
 
+### Weighted NPE
+
 ```{python}
 
 plt.scatter(
     samples[:, 0],
     samples[:, 2],
     s=weights*100,
-    alpha=.4,
+    alpha=.1,
 )
 plt.axvline(-1, lw=.3, c='k')
 plt.axhline(-1, lw=.3, c='k')
-
-
 ```
+
+:::
 
 # Back to gravitational waves
 
