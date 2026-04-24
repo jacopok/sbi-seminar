@@ -373,7 +373,7 @@ else:
 
     estimator.train()
 
-    for epoch in (bar := trange(64, unit='epoch')):
+    for epoch in (bar := trange(16, unit='epoch')):
         losses = []
 
         for theta, x in islice(loader, 256):
