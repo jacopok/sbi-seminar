@@ -295,7 +295,7 @@ def forward_model(theta):
     theta[0] * theta[1] + theta[2]
   ])
 
-def loglike(theta):
+def log_like(theta):
 	x = forward_model(theta)
 	return (
     - 0.5 * ((x-x_obs)**2).sum() 
@@ -320,7 +320,7 @@ fname_nested = Path('./nested_sampler.pkl')
 if fname_nested.exists():
 	sampler = DynamicNestedSampler.restore(str(fname_nested))
 else:
-    sampler = DynamicNestedSampler(loglike, prior_transform, 3, nlive=2000)
+    sampler = DynamicNestedSampler(log_like, prior_transform, 3, nlive=2000)
     sampler.run_nested(dlogz_init=0.01)
     sampler.save(str(fname_nested))
 
@@ -404,7 +404,7 @@ optimizer = optim.Adam(
   estimator.parameters())
 step = GDStep(optimizer)
 
-for epoch in range(64):
+for epoch in range(16):
   losses = []
   for theta, x in islice(loader, 256):
       losses.append(
@@ -465,12 +465,12 @@ def log_prior(sample):
 def effective_samples(samples):
 
     log_like_times_prior = [
-        loglike(sample) + log_prior(sample)
+        log_like(sample) + log_prior(sample)
         for sample in samples
     ]
 
-    ln_weights = log_like_times_prior - flow_density.detach().numpy()
-    weights = np.exp(ln_weights - np.max(ln_weights))
+    log_weights = log_like_times_prior - flow_density.detach().numpy()
+    weights = np.exp(log_weights - np.max(log_weights))
     n_eff = weights.sum()**2 / (weights**2).sum()
     return weights, n_eff
 
@@ -481,8 +481,8 @@ weights, n_eff = effective_samples(sbi_samples)
 ```{python}
 from IPython.display import Markdown
 
-Markdown(f"""We have {len(sbi_samples)} samples
-but only {n_eff:.0f} effective samples.
+Markdown(f"""We have {len(sbi_samples)/1e3:.0f}k samples
+but only {n_eff/1e3:.0f}k effective samples.
 """)
 ```
 
@@ -573,6 +573,8 @@ plt.scatter(
 )
 plt.axvline(-1, lw=.3, c='k')
 plt.axhline(-1, lw=.3, c='k')
+plt.xlim(-1.2, .5)
+plt.ylim(-1.2, .6)
 plt.xlabel('$\\theta_1$')
 _ = plt.ylabel('$\\theta_3$')
 
@@ -590,6 +592,8 @@ plt.scatter(
 )
 plt.axvline(-1, lw=.3, c='k')
 plt.axhline(-1, lw=.3, c='k')
+plt.xlim(-1.2, .5)
+plt.ylim(-1.2, .6)
 plt.xlabel('$\\theta_1$')
 _ = plt.ylabel('$\\theta_3$')
 
